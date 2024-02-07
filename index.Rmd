@@ -1,0 +1,193 @@
+---
+title: "About Me"
+author: "Mary Dixon"
+output:
+  html_document:
+    toc: yes
+    toc_float: true
+  word_document:
+    toc: yes
+  pdf_document:
+    toc: yes
+bibliography: references.bib
+---
+
+# Who I am and where I came from
+
+Hello! I'm Mary. I'm from Florida. I've always been fascinated with nature, and 
+have worked in various plant nurseries and horticulture labs since I was a teen. 
+After getting my MSc, I was an ag extension agent for the state of Alabama. I 
+moved out to Colorado a couple years ago and love it here (but am still getting
+used to the snow).
+
+My favorite activities:
+
+1. Painting
+1. Playing piano
+1. Walk my dog
+1. Reading
+
+**My sweet dog is getting old, so sometimes walking him, I'll actually put him in 
+a stroller like this:**
+
+![Buddy going for a stroll.](buddy.png)
+
+
+
+# Research Interests
+
+I'm a PhD candidate in [Jorge Vivanco's lab](https://agsci.colostate.edu/crb/). 
+We research root and rhizosphere biology and ecology. My specific research 
+focuses on how crop domestication and subsequent breeding events shift the 
+strategies plants employ to recover nutrients (specifically phosphorus) from 
+soil. 
+
+## Influential papers
+
+Right before I began my masters degree, I read the breakthrough paper in 
+phosphorus research, "The story of phosphorus: Global food security and food for 
+thought" [@cordell2009story]. Here, Cordell et al. outline that global reserves 
+of rock phosphate, from which the phosphorus in fertilizers are mined, is finite.
+Further, at the current rates of use, the limited supplies remaining for this
+essential nutrient are not sufficient to sustain life. 
+
+Recently, I have been coming back to an article that investigates the divergence 
+of the soil microbiome communities and functions between wild and domesticated 
+beans [@perez2017linking]. This research is headed by Juan Perez-Jaramillo, a 
+leader in the world of wild crop microbiome research (@perez2016impact 
+@perez2018wild, @perez2019deciphering).
+
+
+
+## The mathematics behind my research
+
+As part of my research, I screen many accessions of wild, heirloom, and modern 
+vegetables to understand their differences in phosphorus acquisition. However, 
+because wild varieties are often smaller by nature, it is not valid to compare
+the raw biomass accumulation of wild to modern accessions. Thus, to accurately 
+compare the effects of low-P stress on my crops, I use a simple calculation
+to compare the relative effects on my samples.
+
+Relative biomass:
+
+
+It is easy to write complex mathematics using a mathematical typesetting
+engine called TeX.  Write two displayed equations that are relevant
+to your work.  For a quick primer on TeX and LaTeX you can
+download [this cheatsheet](https://users.dickinson.edu/~richesod/latex/latexcheatsheet.pdf)
+and then fiddle with including things between the double dollar signs below:
+$$
+RDM = \frac{DM_L}{DM_H} \cdot 100
+$$
+
+where “DM~L~ dry mass in the unfertilized treatment, and “DM~H~” is dry mass in the fertilized treatment.
+
+
+We also approximate microbial biomass through qPCR reads:
+
+$$
+GeneCPS= \sum_{i=1}^{n_o} \frac{n_i}{N} \cdot \frac{GeneCPGi}{16SCPGi} \cdot 16SCPGs
+$$
+where Gene.CPS = functional gene copies g-1 soil FW,
+Sobs = number of observed Amplicon Sequence Variants (ASV),
+ni = number of sequenced reads in ASV i,
+N = number of sequenced reads,
+Gene.CPGi = functional gene copies per genome for ASV i, 
+16S.CPGi = 16S rRNA copies per genome for ASV i, 
+16S.CPS = 16S rRNA copies g-1 soil FW. 
+
+
+
+## My computing experience
+
+I am familiar with R/RStudio. I have limited experience with functions and for 
+loops, but for non-iterative work, I am comfortable working with R. 
+
+Here is an example of some code I wrote recently that shows how to plot a dbRDA 
+and evalute significance in b-diversity:
+```{r, eval=F}
+ord <- capscale(dist ~ Fertilization + Domestication/Variety + Fertilization*Domestication/Variety + Variety, data=d)
+sppscores(ord) <- data
+
+adonis2(dist ~ Fertilization + Domestication/Variety + Fertilization*Domestication/Variety + Variety, data=d, perm=999, by="terms") 
+pair.mod<-pairwise.adonis(dist,factors=d$Variety, p.adjust.m = "fdr")
+pair.mod 
+
+ev <- eigenvals(ord)
+Axis1_exp = round(ev[1] / sum(ev) * 100, 1)
+Axis2_exp = round(ev[2] / sum(ev) * 100, 1)
+axes <- as.data.frame(vegan::scores(ord, display="sites", choices=c(1:2)))
+names(axes) <- c("Axis1", "Axis2")
+axes <- cbind(d, axes) 
+
+axes$Variety <- factor(axes$Variety,level = c('LA0716', 'LA1519', 'LA1580','LA1698','B Pink', 'Marglobe', 'Matchless', 'Rutgers', 'Bobcat', 'Quali T','Line 1','Line 2'))
+
+p<-ggplot(data=axes, aes(x=Axis1, y=Axis2, fill=Variety, shape=Domestication)) +
+  geom_point(size=6) +
+  stat_ellipse(aes(group=Fertilization, color = Fertilization))+
+  scale_fill_brewer(palette = 'Paired')+
+  scale_color_manual(values = c('black','grey44'))+
+  scale_shape_manual(values=c(21,22,23)) +
+  guides(fill = guide_legend(
+    override.aes=list(shape = rep(21,2)))) +
+  labs(x=paste0('CAP1 (', Axis1_exp, '%)'), 
+       y=paste0('CAP2 (', Axis2_exp, '%)')) +
+   theme(axis.text=element_text(size=18, colour = "black"), 
+        axis.title=element_text(size=32,face="bold"),
+        axis.line = element_line(colour = "black"),
+        panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(),
+        panel.border = element_blank(),
+        panel.background = element_blank(),
+        legend.key = element_blank(),
+        legend.text = element_text(size = 24),
+        legend.title = element_text(size = 24, face = 'bold'));p
+ggsave(plot=p, filename = 'Data/Outputs/Figures/SuppFigure1.pdf', width = 14, height = 10)
+```
+
+
+
+I have no experience in any other language, so here is a line for python that I 
+pulled from [this website](https://www.programiz.com/python-programming/examples/hello-world).
+
+```{r, eval=F}
+
+print('Hello, world!')
+```
+
+
+## What I hope to get out of this class
+
+Here is what I hope to gain from BZ562:
+
+* Understand how to manage raw sequencing files.
+* Learn how to use Alpine.   
+* Begin to understand how to start genomic analysis.
+
+# Evaluating some R code
+
+This graph shows public data about water discharge at a site along the Poudre river.
+
+```{r, warning=F, message=F}
+library(dataRetrieval)
+library(dygraphs)
+library(xts)
+library(tidyverse)
+q <- readNWISdv(siteNumbers = '06752260',
+                parameterCd = '00060',
+                startDate = '2017-01-01',
+                endDate = '2022-01-01') %>%
+  rename(q = 'X_00060_00003')
+
+q_xts <- xts(q$q, order.by = q$Date)
+
+
+dygraph(q_xts, main = "Interactive Water Discharge Graph") %>%
+  dyAxis("y", label = "Discharge (cfs)")%>% dySeries("V1", strokeWidth = 2, strokePattern = "dashed")
+```
+
+
+
+
+# Citations
+
